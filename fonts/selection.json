@@ -1,0 +1,111 @@
+{
+	"IcoMoonType": "selection",
+	"icons": [
+		{
+			"icon": {
+				"paths": [
+					"M512 51.2l-256 358.4h512l-256-358.4zM512 972.8l256-358.4h-512l256 358.4z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"tags": [
+					"select-arrows"
+				],
+				"grid": 20
+			},
+			"attrs": [],
+			"properties": {
+				"id": 76,
+				"order": 1,
+				"prevSize": 20,
+				"code": 58880,
+				"name": "select-arrows"
+			},
+			"setIdx": 2,
+			"setId": 3,
+			"iconIdx": 76
+		},
+		{
+			"icon": {
+				"paths": [
+					"M256 307.2h512l-256 460.8-256-460.8z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"tags": [
+					"triangle-down"
+				],
+				"grid": 20
+			},
+			"attrs": [],
+			"properties": {
+				"id": 80,
+				"order": 3,
+				"prevSize": 20,
+				"code": 58881,
+				"name": "triangle-down"
+			},
+			"setIdx": 2,
+			"setId": 3,
+			"iconIdx": 80
+		},
+		{
+			"icon": {
+				"paths": [
+					"M768 716.8h-512l256-460.8 256 460.8z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"tags": [
+					"triangle-up"
+				],
+				"grid": 20
+			},
+			"attrs": [],
+			"properties": {
+				"id": 83,
+				"order": 2,
+				"prevSize": 20,
+				"code": 58882,
+				"name": "triangle-up"
+			},
+			"setIdx": 2,
+			"setId": 3,
+			"iconIdx": 83
+		}
+	],
+	"height": 1024,
+	"metadata": {
+		"name": "streambrowser"
+	},
+	"preferences": {
+		"showGlyphs": true,
+		"showQuickUse": true,
+		"showQuickUse2": true,
+		"showSVGs": true,
+		"fontPref": {
+			"prefix": "icon-",
+			"metadata": {
+				"fontFamily": "streambrowser",
+				"majorVersion": 1,
+				"minorVersion": 0
+			},
+			"metrics": {
+				"emSize": 1024,
+				"baseline": 6.25,
+				"whitespace": 50
+			},
+			"resetPoint": 58880,
+			"showSelector": false
+		},
+		"imagePref": {
+			"prefix": "icon-",
+			"png": true,
+			"useClassSelector": true,
+			"color": 4473924,
+			"bgColor": 16777215
+		},
+		"historySize": 100,
+		"showCodes": false
+	}
+}
