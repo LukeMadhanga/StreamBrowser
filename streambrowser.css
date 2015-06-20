@@ -44,6 +44,8 @@
     font-size: 0;
     vertical-align: top;
     border-bottom: solid thin #EEE;
+    box-sizing: border-box;
+    height: 30px;
 }
 .streambrowser-row:hover {
     background: #F5F5F5;
@@ -59,6 +61,7 @@
     vertical-align: top;
     font-size: initial;
     box-sizing: border-box;
+    height: 100%;
 }
 .sb-cell:hover {
     background: #EEE;

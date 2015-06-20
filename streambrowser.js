@@ -16,6 +16,7 @@
             var data = {
                 instanceid: ++count,
                 filterfields: {},
+                loading: false,
                 s: $.fn.extend({
                     data: [],
                     filter: null,
@@ -27,12 +28,15 @@
                     oninit: ef,
                     onsendfail: ef,
                     onsendsuccess: ef,
+                    scrollthreshold: 50,
                     snapheaders: true
                 }, opts),
-                orderingon: {}
+                orderingon: {},
+                offset: 0
             },
             widths = [],
-            filterinterval = false;
+            filterinterval = false,
+            skip = [];
             
             /**
              * Render this data browser
@@ -188,6 +192,67 @@
             }
             
             /**
+             * Load more data for the browser when nearing the end of the current list
+             */
+            function loadMore() {
+                var rect = $('.stream-browser-body')[0].getBoundingClientRect();
+                if (($('.streambrowser-row:last').offset().top - rect.top) - rect.height > -data.s.scrollthreshold && !data.loading) {
+                    // The last row is almost in view and the system is not in the process of getting more data
+                    data.loading = true;
+                    var payload = {
+                        filterfields: data.filterfields,
+                        orderfields: data.orderingon,
+                        offset: data.offset
+                    };
+                    if (canSkip(payload)) {
+                        // There is no need to get more data because all data for this given query has been returned
+                        return;
+                    }
+                    if (data.s.onbeforesend.call(T, payload, true) === false) {
+                        // Designer cancelled the request for some reason
+                        return;
+                    }
+                    $.ajax({
+                        url: data.s.filter,
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            payload: JSON.stringify(payload)
+                        }
+                    }).done(function (e) {
+                        if (e.result === 'OK') {
+                            if (data.s.onsendsuccess.call(T, e) !== false) {
+                                // Designer has said that it is okay to continute
+                                if (!e.data) {
+                                    addToSkip(payload);
+                                    return;
+                                }
+                                var dest = $('.stream-browser-body', T);
+                                data.s.data = data.s.data.concat(e.data);
+                                data.offset = data.s.data.length;
+                                data.loading = false;
+                                // @TODO: Append the rows, or re render with data.s.data?????
+                                // Now re-render the body
+                                for (var i = 0; i < e.data.length; i++) {
+                                    dest.append(data.s.renderRow(e.data[i], i));
+                                }
+                                data.s.onafterredraw.call(T);
+                            }
+                        } else {
+                            // NB: Used a separate data.loading to prevent re-entrancy before the start row has been reset
+                            data.loading = false;
+                            console.error(e.result);
+                            data.s.onsendfail.call(T, e);
+                        }
+                    }).fail(function (e) {
+                        data.loading = false;
+                        console.error(e.resultText);
+                        data.s.onajaxerror.call(T, e);
+                    });
+                }
+            }
+            
+            /**
              * Reload the data in the browser
              * @param {object} payload
              */
@@ -222,17 +287,41 @@
             };
             
             /**
+             * A given payload does not return more data, therefore add it to a list of payloads for which server calls will not be made
+             * @param {object} payload The payload being used to get data
+             */
+            function addToSkip(payload) {
+                var key = payload.filterfields + '_' + payload.orderfields + '_' + data.offset;
+                skip[key] = true;
+            }
+            
+            /**
+             * Determine whether it is okay to skip a server call because there are no more results
+             * @param {object} payload The payload being used to get data
+             * @returns {boolean} <b>True</b> if it is okay skip searching for a given payload
+             */
+            function canSkip(payload) {
+                var key = payload.filterfields + '_' + payload.orderfields + '_' + data.offset;
+                return key in skip;
+            }
+            
+            /**
              * Bind events 
              */
             function bindEvents() {
                 $('.stream-browser-search', T).unbind('keyup.sbfilter').bind('keyup.sbfilter', filter);
                 // 
                 $('.sbc-sortable', T).unbind('click.sborder').bind('click.sborder', order);
+                $('.stream-browser-body', T).unbind('scroll.sbscroll').bind('scroll.sbscroll', loadMore);
             }
             
-            data.s.render();
-            T.addClass('streambrowser').data('streambrowser', data);
-            data.s.oninit.call(T);
+            (function () {
+                // Initialisation functions
+                data.s.render();
+                data.offset = data.s.data.length;
+                T.addClass('streambrowser').data('streambrowser', data);
+                data.s.oninit.call(T);
+            })();
             return T;
         }
     };
